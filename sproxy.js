@@ -45,10 +45,10 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
 	        
 	    var self = this;    
 	        
-	        console.log('srcAddr: ' + self.srcAddr);
-	        console.log('srcPort: ' + self.srcPort);
-	        console.log('dstAddr: ' + self.dstAddr);
-	        console.log('dstPort: ' + self.dstPort);
+	    console.log('srcAddr: ' + self.srcAddr);
+	    console.log('srcPort: ' + self.srcPort);
+	    console.log('dstAddr: ' + self.dstAddr);
+	    console.log('dstPort: ' + self.dstPort);
 	        
         var server = net.createServer(function (c) {
         });
@@ -136,12 +136,27 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
 
         });
         
+        self.on('close', function(callback) {
+                server.on('close', function() {
+                        callback('closed');
+                });
+                server.close();
+        });
+                
         server.listen(self.srcPort, self.srcAddr);
 
         self.emit('connected', self);
 
     });
-                
+
+    this.toJSON = function() {
+        var obj = new Object();
+        obj.srcAddr = self.srcAddr;
+        obj.srcPort = self.srcPort;
+        obj.dstAddr = self.dstAddr;
+        obj.dstPort = self.dstPort;
+        return obj;
+    };
 };
 sys.inherits(ProxyServer, events.EventEmitter);
 

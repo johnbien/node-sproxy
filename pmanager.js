@@ -25,6 +25,9 @@ var sys = require('sys'),
     zmq = require('zmq'),
     ProxyServer = require('./sproxy').ProxyServer,
     events = require('events');
+
+    var cmdRequest = zmq.createSocket('rep');
+
     
     var ProxyManager = exports.ProxyManager = function ProxyManager(port) {    
     
@@ -36,13 +39,14 @@ var sys = require('sys'),
         
         this.active = true;
         
+        this.proxyCache = new Object();
+        
         events.EventEmitter.call(this);        
         
-        this.cmdRequest = zmq.createSocket('rep');
         
-        this.cmdRequest.bind('tcp://*:' + port, function(err) {
+        cmdRequest.bind('tcp://*:' + port, function(err) {
                 
-                self.cmdRequest.on('message', function(cmd) {
+                cmdRequest.on('message', function(cmd) {
                          
                         console.log('Got> ' + cmd);
                         
@@ -51,12 +55,8 @@ var sys = require('sys'),
                         self.emit(cmd, args, function(result) {
                                 
                                 console.log('Callback result: ' + result);
-                                
-                                if (result != 'OK') {
-                                    self.cmRequest.send('ERR',result);
-                                }
-                    
-                                self.cmdRequest.send('OK');
+                                cmdRequest.send(result);
+
                         });
 
                 });
@@ -84,6 +84,7 @@ var sys = require('sys'),
                 
                 newProxy.on('connected', function(server) {
                         console.log('Created server');
+                        self.proxyCache[newProxy.srcPort] = newProxy;
                         callback('OK');
                 });
 
@@ -91,6 +92,30 @@ var sys = require('sys'),
             
         });
         
+        this.on("LIST_ALL", function(args, callback) {
+                var proxies = new Array();
+                for (var p in self.proxyCache) {
+                    var proxyServer = self.proxyCache[p];
+                    proxies.push("{srcAddr:'" + proxyServer.srcAddr + 
+                        "',srcPort:'" + proxyServer.srcPort + 
+                        "',dstAddr:'" + proxyServer.dstAddr +
+                        "',dstPort:'" + proxyServer.dstPort + "'}");
+                };
+                callback("{proxies:[" + String(proxies) + "]}");
+        });
+        
+        this.on("RMPROXY", function(args, callback) {
+                var srcPort = args[1];
+                
+                var proxyServer = self.proxyCache[srcPort];
+                proxyServer.emit('close',function(result){
+                        console.log('PROXYCLOSED: ' + srcPort);
+                        self.emit('PROXYCLOSED', srcPort);
+                });
+                delete self.proxyCache[srcPort];
+
+                callback('OK');
+        });
     };
     
     sys.inherits(ProxyManager, events.EventEmitter);
