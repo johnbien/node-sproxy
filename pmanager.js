@@ -63,6 +63,10 @@ var sys = require('sys'),
 
         });
 
+        /**
+            Add a new proxy, forwarding incomming socket requests 
+            on a specified port to a destination address and port.
+        **/
         this.on("ADDPROXY", function(args, callback) {
         
             newProxy = new ProxyServer();
@@ -92,6 +96,9 @@ var sys = require('sys'),
             
         });
         
+        /**
+            Returns a list of all proxies registered.
+        **/
         this.on("LIST_ALL", function(args, callback) {
                 var proxies = new Array();
                 for (var p in self.proxyCache) {
@@ -104,6 +111,9 @@ var sys = require('sys'),
                 callback("{proxies:[" + String(proxies) + "]}");
         });
         
+        /**
+            Remove a registered proxy by specifying the incomming port number.
+        **/
         this.on("RMPROXY", function(args, callback) {
                 var srcPort = args[1];
                 
