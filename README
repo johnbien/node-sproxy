@@ -1,0 +1,9 @@
+This is a little app I put together to help in some testing of socket communications.
+
+The idea is that multiple socket proxies can be started and managed remotely and on the fly. This can be usefull for testing communication failures, etc. 
+Another use is in monitoring the traffic (although this can also be done with a tool like ngrep).
+
+I'm keeping it here on github as a permenant plce for it to live, and thought others may find it useful.
+
+It is work-in-progress and may be buggy. Little attention has been paid to fault tollerance and error handeliing.
+
