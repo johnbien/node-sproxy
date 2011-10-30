@@ -34,15 +34,27 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
     
 	this.active = true;
 	
+	this.srcAddr = null;
+	this.srcPort = null;
+	this.dstAddr = null;
+	this.dstPort = null;
+	
 	events.EventEmitter.call(this);
 
-	this.on('connect', function(srcAddr, srcPort, destAddr, destPort) {
+	this.on('connect', function( ) {
+	        
+	    var self = this;    
+	        
+	        console.log('srcAddr: ' + self.srcAddr);
+	        console.log('srcPort: ' + self.srcPort);
+	        console.log('dstAddr: ' + self.dstAddr);
+	        console.log('dstPort: ' + self.dstPort);
 	        
         var server = net.createServer(function (c) {
         });
         
         server.on('error', function(ex) {
-            console.log('server.error');
+            console.log('server.error; ' + ex);
         });
         
         server.on('connection', function(inSocket) {
@@ -57,11 +69,11 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
             inSocket.on('connect', function() {
                 console.log('connect');
 
-                var outSocket = net.createConnection(destPort, destAddr);
+                var outSocket = net.createConnection(self.dstPort, self.dstAddr);
                 outSocket.pause();
     
                 outSocket.on('error', function(ex) {
-                    console.log('outSocket.error');
+                    console.log('outSocket.error; ' + ex);
                     inSocket.end();
                     outSocket.destroy();
                 });
@@ -124,20 +136,12 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
 
         });
         
-        server.listen(srcPort, srcAddr);
+        server.listen(self.srcPort, self.srcAddr);
 
         self.emit('connected', self);
 
     });
                 
-}
+};
 sys.inherits(ProxyServer, events.EventEmitter);
-
-
-var proxyServer = new ProxyServer();
-
-proxyServer.emit("connect",null,8222,'10.0.0.3',22, function(server) {
-        console.log('Created server');
-});
-
 
