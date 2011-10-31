@@ -20,6 +20,9 @@
     It will allow you to port forward incomming ports to a specified host and port.
 **/
 
-var ProxyManager = require('./pmanager').ProxyManager;
+var ProxyManager = require('./pmanager').ProxyManager,
+    ZMQMsgHandler = require('./zmqMsgHandler').ZMQMsgHandler;
 
-proxyManager = new ProxyManager('10101');
+proxyManager = new ProxyManager( );
+
+zmqMsgHandler = new ZMQMsgHandler('tcp://*:10101', proxyManager);

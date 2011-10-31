@@ -22,14 +22,10 @@
 
 
 var sys = require('sys'),
-    zmq = require('zmq'),
     ProxyServer = require('./sproxy').ProxyServer,
     events = require('events');
 
-    var cmdRequest = zmq.createSocket('rep');
-
-    
-    var ProxyManager = exports.ProxyManager = function ProxyManager(port) {    
+    var ProxyManager = exports.ProxyManager = function ProxyManager( ) {    
     
         var self = this; 
         
@@ -43,26 +39,6 @@ var sys = require('sys'),
         
         events.EventEmitter.call(this);        
         
-        
-        cmdRequest.bind('tcp://*:' + port, function(err) {
-                
-                cmdRequest.on('message', function(cmd) {
-                         
-                        console.log('Got> ' + cmd);
-                        
-                        var args = Array.prototype.slice.call(arguments);
-
-                        self.emit(cmd, args, function(result) {
-                                
-                                console.log('Callback result: ' + result);
-                                cmdRequest.send(result);
-
-                        });
-
-                });
-
-        });
-
         /**
             Add a new proxy, forwarding incomming socket requests 
             on a specified port to a destination address and port.
@@ -99,7 +75,7 @@ var sys = require('sys'),
         /**
             Returns a list of all proxies registered.
         **/
-        this.on("LIST_ALL", function(args, callback) {
+        this.on("LISTALL", function(args, callback) {
                 var proxies = new Array();
                 for (var p in self.proxyCache) {
                     var proxyServer = self.proxyCache[p];
@@ -126,6 +102,17 @@ var sys = require('sys'),
 
                 callback('OK');
         });
+        
+        this.on("HELP", function(args, callback) {
+                
+                commands = new Array();
+                for (cmd in self._events) {
+                    commands.push(cmd);
+                }
+                
+                callback("{commands:[" + String(commands) + "]}");
+        });
+        
     };
     
     sys.inherits(ProxyManager, events.EventEmitter);
