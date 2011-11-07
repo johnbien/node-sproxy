@@ -9,6 +9,6 @@
     "connect": ">= 1.7.2",
     "webservices": ">= 0.5.1"
   },
-  "main": "index",
+  "main": "pmanager",
   "engines": { "node": ">= 0.4.8" }
 }
