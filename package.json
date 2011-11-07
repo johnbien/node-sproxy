@@ -1,0 +1,14 @@
+{
+  "name": "node-sproxy",
+  "version": "0.0.1",
+  "description": "Socket proxy / port forwarder that is runtime configurable",
+  "keywords": ["socket", "proxy", "port-forward"],
+  "repository": "git://github.com/johnbien/node-sproxy.git",
+  "author": "John Bien <john@bien.co.za>",
+  "dependencies": {
+    "connect": ">= 1.7.2",
+    "webservices": ">= 0.5.1"
+  },
+  "main": "index",
+  "engines": { "node": ">= 0.4.8" }
+}
