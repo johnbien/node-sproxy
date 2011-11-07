@@ -7,3 +7,32 @@ I'm keeping it here on github as a permenant plce for it to live, and thought ot
 
 It is work-in-progress and may be buggy. Little attention has been paid to fault tollerance and error handeliing.
 
+
+to run the server, issue the command :
+
+    node httpMsgHandler.js
+    
+This will start the server on port 10102
+
+From a browser navigate to:
+
+    http://localhost:10102
+
+This will provide a page documenting the server.
+
+COMMANDS:
+
+ HELP - This will list all the available commands.
+
+ ADDPROXY - Use this command to add a proxy on a port to a specified destination.
+    Requires the MESSAGE parameter:
+      MESSAGE - has two forms
+        MESSAGE=<srcport>,<dstaddr>,<dstport> 
+                or
+        MESSAGE=<srcaddr>,<srcport>,<dstaddr>,<dstport>
+        
+ RMPROXY - Use this command to remove a proxy by giving the source port provided to ADDPROXY
+    Requires the MESSAGE parameter:
+        MESSAGE=<srcport>
+        
+ LISTALL - Lists all the defined proxies
