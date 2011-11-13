@@ -94,10 +94,12 @@ var sys = require('sys'),
                 var srcPort = args[1];
                 
                 var proxyServer = self.proxyCache[srcPort];
-                proxyServer.emit('close',function(result){
-                        console.log('PROXYCLOSED: ' + srcPort);
-                        self.emit('PROXYCLOSED', srcPort);
-                });
+                if (proxyServer != null) {
+                    proxyServer.emit('close',function(result){
+                            console.log('PROXYCLOSED: ' + srcPort);
+                            self.emit('PROXYCLOSED', srcPort);
+                    });
+                }
                 delete self.proxyCache[srcPort];
 
                 callback('OK');
