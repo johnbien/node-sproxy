@@ -111,7 +111,7 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
                     outSocket.on('data', function(chunk) {
                         try {
                             if (!inSocket.write(chunk)) {
-                                consol.log('outStock.pause');
+                                console.log('outStock.pause');
                                 outSocket.pause();
                             }
                         } catch (ex) {
