@@ -34,8 +34,9 @@ socket.on('message', function(reply) {
 socket.connect('tcp://localhost:10101')
 
 socket.send('ADDPROXY',"127.0.0.1","8222","10.0.0.1","22");
+socket.send('ADDPROXY',"10.0.0.1","8222","10.0.0.1","22");
 socket.send('ADDPROXY',"8223","10.0.0.1","22");
 socket.send('LIST_ALL');
-socket.send('RMPROXY','8222');
-socket.send('LIST_ALL');
+//socket.send('RMPROXY','8222');
+//socket.send('LIST_ALL');
 

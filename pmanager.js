@@ -68,7 +68,7 @@ var sys = require('sys'),
                         callback('OK');
                 });
 
-                newProxy.emit("connect");
+                self.emit("connect", newProxy);
             
         });
         
@@ -97,7 +97,7 @@ var sys = require('sys'),
                 if (proxyServer != null) {
                     proxyServer.emit('close',function(result){
                             console.log('PROXYCLOSED: ' + srcPort);
-                            self.emit('PROXYCLOSED', srcPort);
+                            self.emit('PROXYCLOSED', proxyServer);
                     });
                 }
                 delete self.proxyCache[srcPort];

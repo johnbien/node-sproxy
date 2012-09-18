@@ -22,6 +22,7 @@
 
 
 var sys = require('sys'),
+    ProxyLogger     = require('./logger').ProxyLogger,
     ProxyManager     = require('./pmanager').ProxyManager,
     events          = require('events'),
     webservice      = require('webservice'),
@@ -37,6 +38,7 @@ var HttpMsgHandler = exports.HttpMsgHandler = function HttpMsgHandler() {
 
 var proxyManager = new ProxyManager();
 
+var proxyLogger = new ProxyLogger(proxyManager);
 
 server.use(connect.logger('dev'));
 
