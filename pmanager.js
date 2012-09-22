@@ -45,7 +45,7 @@ var sys = require('sys'),
         **/
         this.on("ADDPROXY", function(args, callback) {
         
-            newProxy = new ProxyServer();
+            var newProxy = new ProxyServer();
 
                 if (args.length === 4) {
                     newProxy.srcAddr = null; 
@@ -62,11 +62,18 @@ var sys = require('sys'),
                     return;
                 }
                 
+                if (self.proxyCache[newProxy.srcPort]) {
+                    self.emit('error', 'Proxy with port already defined');
+                    return;
+                }
+                
                 newProxy.on('connected', function(server) {
                         console.log('Created server');
                         self.proxyCache[newProxy.srcPort] = newProxy;
                         callback('OK');
                 });
+                
+                newProxy.connect();
 
                 self.emit("connect", newProxy);
             

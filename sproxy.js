@@ -41,7 +41,7 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
 	
 	events.EventEmitter.call(this);
 
-	this.on('connect', function( ) {
+	this.connect = function( ) {
 	        
 	    var self = this;    
 	        
@@ -55,83 +55,86 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
         
         server.on('error', function(ex) {
             console.log('server.error; ' + ex);
+            self.emit('error', ex);
         });
         
         server.on('connection', function(inSocket) {
             console.log('Connected');
 
-            inSocket.pause();
+//            inSocket.pause();
             
             inSocket.on('error', function(ex) {
                 console.log('inSocket.error');
+                self.emit('error', ex);
             });
         
+            var outSocket = net.createConnection(self.dstPort, self.dstAddr);
+
+            outSocket.on('error', function(ex) {
+                console.log('outSocket.error; ' + ex);
+                inSocket.end();
+                outSocket.destroy();
+                self.emit('error', ex);
+            });
+
             inSocket.on('connect', function() {
-                console.log('connect');
+                console.log('inSocket.connect');
 
-                var outSocket = net.createConnection(self.dstPort, self.dstAddr);
-                outSocket.pause();
-    
-                outSocket.on('error', function(ex) {
-                    console.log('outSocket.error; ' + ex);
-                    inSocket.end();
-                    outSocket.destroy();
+                inSocket.on('drain', function() {
+                    console.log('inSocket.drain');
+                    outSocket.resume();
                 });
-
-                outSocket.on('connect', function() {
-                    console.log('outSocket.connect');
+                
+                inSocket.on('end', function() {
+                    console.log('inSocket.end');
+                    outSocket.end();
+                });
         
-                    inSocket.on('drain', function() {
-                        console.log('inSocket.drain');
-                        outSocket.resume();
-                    });
-                    
-                    inSocket.on('end', function() {
-                        console.log('inSocket.end');
-                        outSocket.end();
-                    });
-            
-                    outSocket.on('end', function() {
-                        console.log('outSocket.end');
-                        inSocket.end();
-                    });
-                    
-                    outSocket.on('drain', function() {
-                        console.log('outSocket.drain');
-                        inSocket.resume();
-                    });
-                    
-                    outSocket.on('close', function(hadError) {
-                        console.log('outSocket.close');
-                        if (hadError) {
-                            inSocket.destroy();
+                
+                inSocket.on('data', function(chunk) {
+                    try {
+                        if (!outSocket.write(chunk)) {
+                            console.log('inStock.pause');
+                            inSocket.pause();
                         }
-                    });
-            
-                    outSocket.on('data', function(chunk) {
-                        try {
-                            if (!inSocket.write(chunk)) {
-                                console.log('outStock.pause');
-                                outSocket.pause();
-                            }
-                        } catch (ex) {
-                            outSocket.emit('error',ex);
-                        }
-                    });
-                    
-                    inSocket.on('data', function(chunk) {
-                        try {
-                            if (!outSocket.write(chunk)) {
-                                consol.log('inStock.pause');
-                                inSocket.pause();
-                            }
-                        } catch (ex) {
-                            outSocket.emit('error',ex);
-                        }
-                    });    
-                    
-                });
+                    } catch (ex) {
+                        outSocket.emit('error',ex);
+                    }
+                });    
+                
+            });
 
+            outSocket.on('connect', function() {
+                console.log('outSocket.connect');
+    
+                outSocket.on('end', function() {
+                    console.log('outSocket.end');
+                    inSocket.end();
+                });
+                
+                outSocket.on('drain', function() {
+                    console.log('outSocket.drain');
+                    inSocket.resume();
+                });
+                
+                outSocket.on('close', function(hadError) {
+                    console.log('outSocket.close');
+                    if (hadError) {
+                        inSocket.destroy();
+                    }
+                });
+        
+                outSocket.on('data', function(chunk) {
+                    try {
+                        if (!inSocket.write(chunk)) {
+                            console.log('outStock.pause');
+                            outSocket.pause();
+                        }
+                    } catch (ex) {
+                        outSocket.emit('error',ex);
+                    }
+                });
+                
             });
 
         });
@@ -147,7 +150,7 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
 
         self.emit('connected', self);
 
-    });
+    };
 
     this.toJSON = function() {
         var obj = new Object();

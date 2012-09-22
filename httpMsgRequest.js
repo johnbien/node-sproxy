@@ -31,7 +31,7 @@ exports.request.schema = {
 	message: {
 		type: 'string',
 		optional: true,
-		description: 'Th message'
+		description: 'The message'
 	}
 };
 exports.request.description = "Generic message request";
