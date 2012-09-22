@@ -5,9 +5,8 @@ var ProxyLogger = exports.ProxyLogger = function ProxyLogger(proxyManager) {
     var self = this;
     
     this.logData = new Object();
-    
+
     proxyManager.on('connect', function(proxyServer) {
-        console.log('Adding proxy to logger');
         var ldata = self.logData[proxyServer.srcPort];
         if (ldata == null || ldata == undefined) {
             ldata = new Object();
@@ -19,9 +18,21 @@ var ProxyLogger = exports.ProxyLogger = function ProxyLogger(proxyManager) {
         ldata.log.push('Connected');
     });
     
-    proxyManager.on('SHOWLOG', function(args, callback) {
-        console.log(self.logData);
-        callback('OK');
+    proxyManager.on('PROXYCLOSED', function (srcPort) {
+        var ldata = self.logData[srcPort];
+        debugger;
+        if (ldata != null && ldata != undefined) {
+            ldata.log.push('Disconnected');
+        }            
     });
+    
+    proxyManager.on('SHOWLOG', function(args, callback) {
+        try {
+            callback(JSON.stringify(self.logData));
+        } catch (err) {
+            proxyManager.emit('error', err);
+        }
+    });
+
     
 };

@@ -59,9 +59,6 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
         });
         
         server.on('connection', function(inSocket) {
-            console.log('Connected');
-
-//            inSocket.pause();
             
             inSocket.on('error', function(ex) {
                 console.log('inSocket.error');
@@ -78,15 +75,12 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
             });
 
             inSocket.on('connect', function() {
-                console.log('inSocket.connect');
 
                 inSocket.on('drain', function() {
-                    console.log('inSocket.drain');
                     outSocket.resume();
                 });
                 
                 inSocket.on('end', function() {
-                    console.log('inSocket.end');
                     outSocket.end();
                 });
         
@@ -94,7 +88,6 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
                 inSocket.on('data', function(chunk) {
                     try {
                         if (!outSocket.write(chunk)) {
-                            console.log('inStock.pause');
                             inSocket.pause();
                         }
                     } catch (ex) {
@@ -105,20 +98,16 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
             });
 
             outSocket.on('connect', function() {
-                console.log('outSocket.connect');
     
                 outSocket.on('end', function() {
-                    console.log('outSocket.end');
                     inSocket.end();
                 });
                 
                 outSocket.on('drain', function() {
-                    console.log('outSocket.drain');
                     inSocket.resume();
                 });
                 
                 outSocket.on('close', function(hadError) {
-                    console.log('outSocket.close');
                     if (hadError) {
                         inSocket.destroy();
                     }
@@ -127,7 +116,6 @@ var ProxyServer = exports.ProxyServer = function ProxyServer( ) {
                 outSocket.on('data', function(chunk) {
                     try {
                         if (!inSocket.write(chunk)) {
-                            console.log('outStock.pause');
                             outSocket.pause();
                         }
                     } catch (ex) {

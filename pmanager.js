@@ -83,15 +83,16 @@ var sys = require('sys'),
             Returns a list of all proxies registered.
         **/
         this.on("LISTALL", function(args, callback) {
-                var proxies = new Array();
-                for (var p in self.proxyCache) {
-                    var proxyServer = self.proxyCache[p];
-                    proxies.push("{srcAddr:'" + proxyServer.srcAddr + 
-                        "',srcPort:'" + proxyServer.srcPort + 
-                        "',dstAddr:'" + proxyServer.dstAddr +
-                        "',dstPort:'" + proxyServer.dstPort + "'}");
-                };
-                callback("{proxies:[" + String(proxies) + "]}");
+                callback(JSON.stringify(self.proxyCache));
+//                var proxies = new Array();
+//                for (var p in self.proxyCache) {
+//                    var proxyServer = self.proxyCache[p];
+//                    proxies.push("{srcAddr:'" + proxyServer.srcAddr + 
+//                        "',srcPort:'" + proxyServer.srcPort + 
+//                        "',dstAddr:'" + proxyServer.dstAddr +
+//                        "',dstPort:'" + proxyServer.dstPort + "'}");
+//                };
+//                callback("{proxies:[" + String(proxies) + "]}");
         });
         
         /**
@@ -104,7 +105,7 @@ var sys = require('sys'),
                 if (proxyServer != null) {
                     proxyServer.emit('close',function(result){
                             console.log('PROXYCLOSED: ' + srcPort);
-                            self.emit('PROXYCLOSED', proxyServer);
+                            self.emit('PROXYCLOSED', srcPort);
                     });
                 }
                 delete self.proxyCache[srcPort];

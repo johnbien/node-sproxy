@@ -5,17 +5,13 @@ this.endpoint = "http://localhost:10102";
 
 exports.request = function(options, callback) {
 
-    console.log(options.proxyManager._events);
-    
     var args = options.message == null ? new Array() : options.message.split(',');
     args.unshift(options.command);
 
     console.log('Got> ' + args[0]);
-    console.log('Args [' + args + ']');
     
     options.proxyManager.emit(options.command, args, function(result) {
             
-            console.log('Callback result: ' + result);
             callback(result);
 
     });

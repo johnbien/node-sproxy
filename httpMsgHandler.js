@@ -42,17 +42,7 @@ var proxyLogger = new ProxyLogger(proxyManager);
 
 server.use(connect.logger('dev'));
 
-server.use(connect.favicon());
-
 server.use(webservice.createHandler(httpMsgModule,{userName:'user',proxyManager:proxyManager}));
-
-/*
-server.use(connect.basicAuth(
-	function(user,pass, callback) {
-		server.use(webservice.createHandler(demoModule,{userName:user}));
-		callback(null,user);
-	}));
-*/
 
 server.listen(10102);
 
